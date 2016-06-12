@@ -23,32 +23,14 @@ public class Binarization {
 
 		Mat src = new Mat();
 		Mat work = new Mat();
-		Mat grad = new Mat();
 		src = Highgui.imread("4.jpg");
-
-		int scale = 1;
-		int delta = 1;
-		int ddepth = CvType.CV_16S;
 
 		Imgproc.cvtColor(src, work, Imgproc.COLOR_BGR2GRAY);
 
-		Imgproc.threshold(work, work,150, 255, Imgproc.THRESH_BINARY_INV);
-
-		Mat grad_x = new Mat();
-		Mat grad_y = new Mat();
-		Mat abs_grad_x = new Mat();
-		Mat abs_grad_y = new Mat();
-
-		// Imgproc.Sobel(work, grad_x, ddepth, 1, 0, 3, scale, delta,
-		// Imgproc.BORDER_DEFAULT);
-		// Core.convertScaleAbs(grad_x, abs_grad_x);
-		//
-		// Imgproc.Sobel(work, grad_y, ddepth, 0, 1, 3, scale, delta,
-		// Imgproc.BORDER_DEFAULT);
-		// Core.convertScaleAbs(grad_y, abs_grad_y);
-		//
-		// Core.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, work);
-
+		Imgproc.threshold(work, work,120, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C);
+		
+		Highgui.imwrite("binary.jpg", work);
+		
 		Mat skel = new Mat(work.size(), CvType.CV_8UC1, new Scalar(0));
 		Mat temp = new Mat(work.size(), CvType.CV_8UC1);
 		Mat element = Imgproc.getStructuringElement(Imgproc.MORPH_CROSS, new Size(3, 3));
@@ -70,6 +52,6 @@ public class Binarization {
 		Imgproc.morphologyEx(skel, skel, Imgproc.MORPH_CLOSE, se);
 
 		Highgui.imwrite("morph.jpg", skel);
-
+		
 	}
 }

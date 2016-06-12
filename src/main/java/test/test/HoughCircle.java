@@ -11,34 +11,26 @@ import org.opencv.imgproc.Imgproc;
 public class HoughCircle {
 	public static void main(String args[]) {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		Mat source = Highgui.imread("1.png", Highgui.CV_LOAD_IMAGE_COLOR);
-        Mat destination = new Mat(source.rows(), source.cols(), source.type());
+		Mat source = Highgui.imread("canny.jpg", Highgui.CV_LOAD_IMAGE_GRAYSCALE);
 
-        Imgproc.cvtColor(source, destination, Imgproc.COLOR_RGB2GRAY);
+		Mat circles = new Mat();
+		Imgproc.HoughCircles(source, circles, Imgproc.CV_HOUGH_GRADIENT, 30, 100);
+		System.out.println(circles.size());
+		int radius;
+		Point pt;
+		for (int x = 0; x < circles.cols(); x++) {
+			double vCircle[] = circles.get(0, x);
 
-        Imgproc.GaussianBlur(destination, destination, new Size(3,3),0,0); 
+			if (vCircle == null)
+				break;
 
+			pt = new Point(Math.round(vCircle[0]), Math.round(vCircle[1]));
+			radius = (int) Math.round(vCircle[2]);
 
-        Mat circles = new Mat();
-        Imgproc.HoughCircles(destination, circles, Imgproc.CV_HOUGH_GRADIENT, 
-		         2.0, destination.rows() / 8d);
-        System.out.println(circles.size());
-        int radius;
-        Point pt;
-        for (int x = 0; x < circles.cols(); x++) {
-        double vCircle[] = circles.get(0,x);
+			// draw the found circle
+			Core.circle(source, pt, 3, new Scalar(255, 255, 255), 1);
+		}
 
-        if (vCircle == null)
-            break;
-
-        pt = new Point(Math.round(vCircle[0]), Math.round(vCircle[1]));
-        radius = (int)Math.round(vCircle[2]);
-
-        // draw the found circle
-        Core.circle(destination, pt, 5, new Scalar(0,255,255), 3);
-        Core.circle(destination, pt, 3, new Scalar(255,255,255), 3);
-        }
-
-        Highgui.imwrite("foundCircles.jpg", destination);
+		Highgui.imwrite("foundCircles.jpg", source);
 	}
 }
